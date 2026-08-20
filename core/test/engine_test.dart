@@ -141,6 +141,128 @@ void main() {
     });
   });
 
+  group('Voltage validation (spec §3.1 slot 5)', () {
+    test('rating below panel voltage is a blocker', () {
+      final result = engine.evaluate(
+        snapshot([component('c1', sccrKa: 65, volts: 240)]),
+        allSignedOffRegistry(),
+      );
+      final blocker =
+          result.flags.singleWhere((f) => f.severity == FlagSeverity.blocker);
+      expect(blocker.ruleId, RuleIds.voltageValidation);
+      expect(blocker.componentId, 'c1');
+      expect(result.canFinalize, isFalse);
+    });
+
+    test('rating at or above panel voltage raises no voltage flag', () {
+      final result = engine.evaluate(
+        snapshot([
+          component('c1', sccrKa: 65, volts: 480),
+          component('c2', sccrKa: 65, volts: 600),
+        ]),
+        allSignedOffRegistry(),
+      );
+      expect(result.flags, isEmpty);
+    });
+
+    test('missing voltage rating is a blocker', () {
+      final result = engine.evaluate(
+        snapshot([component('c1', sccrKa: 65, volts: null)]),
+        allSignedOffRegistry(),
+      );
+      final blocker =
+          result.flags.singleWhere((f) => f.severity == FlagSeverity.blocker);
+      expect(blocker.ruleId, RuleIds.voltageValidation);
+    });
+
+    test('voltage rule fires and appears in fired list', () {
+      final result = engine.evaluate(
+        snapshot([component('c1', sccrKa: 65)]),
+        allSignedOffRegistry(),
+      );
+      expect(result.firedRuleIds, contains(RuleIds.voltageValidation));
+    });
+
+    test('slash-rating context without configured params is a question', () {
+      final panel = Project(
+        meta: meta('proj-1'),
+        shopId: 'shop-1',
+        name: 'Test Panel',
+        status: ProjectStatus.draft,
+        ratedVoltages: const [
+          RatedVoltage(
+              volts: 480,
+              system: VoltageSystem.threePhaseWye,
+              slashRatingContext: true),
+        ],
+      );
+      final result = engine.evaluate(
+        ProjectSnapshot(
+          project: panel,
+          circuits: [feeder()],
+          components: [component('c1', sccrKa: 65)],
+        ),
+        allSignedOffRegistry(),
+      );
+      final question =
+          result.flags.singleWhere((f) => f.severity == FlagSeverity.question);
+      expect(question.ruleId, RuleIds.voltageValidation);
+    });
+  });
+
+  group('Assumed-defaults table matching (spec §3.1 slot 3)', () {
+    RulesRegistry withTable(List<Map<String, Object?>> table) {
+      final reg = allSignedOffRegistry();
+      final rule = reg[RuleIds.assumedDefault]!;
+      return reg.withEntry(rule.copyWith(
+        params: {...rule.params, 'defaults_table': table},
+        version: rule.version + 1,
+      ));
+    }
+
+    test('entered value matching the shop table raises no flag', () {
+      final result = engine.evaluate(
+        snapshot(
+            [component('c1', sccrKa: 5, source: SourceType.assumedDefault)]),
+        withTable([
+          {'category': 'circuit_breaker_mccb', 'sccr_ka': 5},
+        ]),
+      );
+      expect(result.flags, isEmpty);
+      expect(
+        result.traces.single.steps
+            .any((s) => s.description.contains('matches your configured')),
+        isTrue,
+      );
+    });
+
+    test('entered value differing from the shop table warns', () {
+      final result = engine.evaluate(
+        snapshot(
+            [component('c1', sccrKa: 10, source: SourceType.assumedDefault)]),
+        withTable([
+          {'category': 'circuit_breaker_mccb', 'sccr_ka': 5},
+        ]),
+      );
+      final warning =
+          result.flags.singleWhere((f) => f.severity == FlagSeverity.warning);
+      expect(warning.message, contains('Reconcile'));
+    });
+
+    test('no table entry for the category warns', () {
+      final result = engine.evaluate(
+        snapshot(
+            [component('c1', sccrKa: 5, source: SourceType.assumedDefault)]),
+        withTable([
+          {'category': 'contactor', 'sccr_ka': 5},
+        ]),
+      );
+      final warning =
+          result.flags.singleWhere((f) => f.severity == FlagSeverity.warning);
+      expect(warning.message, contains('no entry for category'));
+    });
+  });
+
   group('Flag provenance (spec §3.1)', () {
     test('every flag names its rule id and version', () {
       final result = engine.evaluate(

@@ -20,9 +20,10 @@ responsible person's document — the app is the pencil.
 
 | Path      | Contents |
 |-----------|----------|
-| `core/`   | `faultcorral_core` — pure Dart library: domain model, rules registry, rollup engine, JSON export/import. Zero UI imports. |
-| `app/`    | Flutter UI (desktop/web first). Phase 0: first-run acknowledgment flow stub. |
-| `report/` | PDF report generation (Phase 1). |
+| `core/`   | `faultcorral_core` — pure Dart library: domain model, rules registry, rollup engine, finalization gate, JSON export/import. Zero UI imports. |
+| `store/`  | `faultcorral_store` — SQLite persistence (WAL, append-only audit via DB triggers, version pinning). Pure Dart. |
+| `app/`    | Flutter desktop UI: acknowledgment gate, project workspace, library, registry, finalize flow. |
+| `report/` | `faultcorral_report` — deterministic, hashable §6 PDF worksheets (ADR 0005). Pure Dart. |
 | `data/`   | Versioned export schema, empty registry seeds. |
 | `tests/`  | Cross-package fixtures: golden cases (placeholders until the owner supplies worked examples). |
 | `legal/`  | EULA / disclaimer drafts — all `DRAFT — REQUIRES ATTORNEY REVIEW`, ship-blocking. |
@@ -38,11 +39,17 @@ Dart-package unit/property tests live inside each package's `test/` directory
 Requires Dart SDK ≥ 3.4 (core) and Flutter (app).
 
 ```sh
-# Core library
+# Pure Dart packages (same commands work in store/ and report/)
 cd core
 dart pub get
 dart analyze
 dart test
+
+# Flutter app
+cd app
+flutter pub get
+flutter test
+flutter run -d linux
 
 # Repo checks (run from repo root)
 dart tool/banned_vocab_lint.dart
@@ -71,9 +78,10 @@ CI runs all of the above on every push (`.github/workflows/ci.yml`).
 
 ## Build status
 
-Currently in **Phase 0 — Skeleton** of `docs/faultcorral-master-build-prompt.md`.
-Phase gates require explicit owner confirmation before advancing. Open items for
-GATE 0 are listed in `docs/phase-0-gate.md` and the generated
+**Phase 1 — MVP** of `docs/faultcorral-master-build-prompt.md` is
+code-complete and awaiting the GATE 1 exercise (owner runs a real historical
+panel end-to-end; see `docs/phase-1-gate.md`). GATE 0 was confirmed
+2026-08-19. Open owner items are enumerated in the generated
 `docs/owner-verification-checklist.md`.
 
 ---

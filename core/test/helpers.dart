@@ -56,14 +56,18 @@ Component component(
   String circuitId = 'circ-1',
   SourceType source = SourceType.datasheet,
   List<String> comboRatingIds = const [],
+  double? volts = 480,
+  ComponentCategory category = ComponentCategory.circuitBreakerMccb,
 }) =>
     Component(
       meta: meta(id),
       circuitId: circuitId,
-      category: ComponentCategory.circuitBreakerMccb,
+      category: category,
       tag: 'TAG-$id',
       powerCircuit: powerCircuit,
-      voltageRating: attestedVolts(480),
+      voltageRating: volts == null
+          ? const AttestedValue<VoltageRating>.empty()
+          : attestedVolts(volts),
       sccrKa: sccrKa == null
           ? const AttestedValue<double>.empty()
           : attestedKa(sccrKa, source: source),

@@ -9,18 +9,18 @@
 import 'package:faultcorral_core/faultcorral_core.dart';
 import 'package:flutter/material.dart';
 
+import 'app_state.dart';
+
 /// Must match legal/FIRST_RUN_ACKNOWLEDGMENT_DRAFT.md.
 const acknowledgmentTextVersion = '0.1.0-draft';
 
 // lint:allow-banned-vocab — spec §0.4 placeholder wording: the text NEGATES
 // authority claims ("does not ... verify, or certify"); attorney will supply
 // final language. Version-locked to acknowledgmentTextVersion above.
-const checkbox1Text =
-    '[[ATTORNEY REVIEW REQUIRED]] I understand FaultCorral '
+const checkbox1Text = '[[ATTORNEY REVIEW REQUIRED]] I understand FaultCorral '
     'is a documentation aid, not an authority. It does not determine, verify, '
     'or certify any rating or compliance.';
-const checkbox2Text =
-    '[[ATTORNEY REVIEW REQUIRED]] I accept final '
+const checkbox2Text = '[[ATTORNEY REVIEW REQUIRED]] I accept final '
     'responsibility and liability for all values entered, all determinations '
     'made, and all documentation produced using this tool.';
 
@@ -29,10 +29,12 @@ class AcknowledgmentScreen extends StatefulWidget {
     super.key,
     required this.gate,
     required this.onAccepted,
+    this.userId = 'user-local',
   });
 
   final AcknowledgmentGate gate;
   final ValueChanged<AcknowledgmentRecord> onAccepted;
+  final String userId;
 
   @override
   State<AcknowledgmentScreen> createState() => _AcknowledgmentScreenState();
@@ -50,10 +52,9 @@ class _AcknowledgmentScreenState extends State<AcknowledgmentScreen> {
     widget.onAccepted(
       AcknowledgmentRecord(
         id: 'ack-${now.microsecondsSinceEpoch}',
-        // TODO(phase-1): real user identity once accounts are wired up.
-        userId: 'local-user',
+        userId: widget.userId,
         textVersion: widget.gate.currentTextVersion,
-        appVersion: '0.0.1-phase0',
+        appVersion: appVersion,
         acceptedAt: now,
       ),
     );
@@ -65,10 +66,10 @@ class _AcknowledgmentScreenState extends State<AcknowledgmentScreen> {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 560),
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(32),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(

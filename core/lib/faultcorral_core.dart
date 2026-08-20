@@ -7,6 +7,8 @@ library;
 export 'src/engine/engine.dart';
 export 'src/engine/result.dart';
 export 'src/engine/snapshot.dart';
+export 'src/finalize/finalization.dart';
+export 'src/model/flag_acknowledgment.dart';
 export 'src/model/accounts.dart';
 export 'src/model/acknowledgment.dart';
 export 'src/model/audit.dart';

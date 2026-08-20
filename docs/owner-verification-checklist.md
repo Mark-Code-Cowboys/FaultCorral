@@ -4,8 +4,9 @@
 
 Every `TODO(owner-verify)` marker in the codebase, enumerated automatically (spec §7 Phase 0). Each item needs the owner's attention against his licensed copy of the standard before the related rule or value may leave `unverified` status.
 
-13 open item(s).
+16 open item(s).
 
+- [ ] `core/lib/src/engine/engine.dart:247` — // TODO(owner-verify): slash_rating_params semantics (spec §3.1 slot 5).
 - [ ] `core/lib/src/registry/registry.dart:57` — /// nothing marked off by anyone. TODO(owner-verify): every entry below —
 - [ ] `core/lib/src/registry/registry.dart:70` — // TODO(owner-verify): confirm ranking depth. Placeholder param.
 - [ ] `core/lib/src/registry/registry.dart:81` — // TODO(owner-verify): category applicability list is owner-defined.
@@ -15,6 +16,8 @@ Every `TODO(owner-verify)` marker in the codebase, enumerated automatically (spe
 - [ ] `docs/faultcorral-master-build-prompt.md:218` — placeholder cases marked `TODO(owner-verify)`.
 - [ ] `docs/faultcorral-master-build-prompt.md:302` — - Owner-verification checklist doc: every `TODO(owner-verify)` in the codebase is
 - [ ] `docs/phase-0-gate.md:24` — `TODO(owner-verify)`.
+- [ ] `report/lib/src/report.dart:22` — // TODO(owner-verify): owner-authored method statement template (spec §6.1.2).
+- [ ] `report/lib/src/report.dart:26` — // TODO(owner-verify): attestation statement wording (owner + attorney).
 - [ ] `tests/golden/case_0001.json:5` — "notes": "TODO(owner-verify): Replace with a real panel run end-to-end at GATE 1 (spec §7 Phase 1) and its known-correct outcome from the shop's spreadsheet. 'export' holds a full FaultCorral project export; 'expected' holds the outcome to regression-test against.",
 - [ ] `tool/owner_verify_checklist.dart:4` — // TODO(owner-verify) marker in the repo (spec §7 Phase 0: the checklist is
 - [ ] `tool/owner_verify_checklist.dart:13` — const marker = 'TODO(owner-verify)';

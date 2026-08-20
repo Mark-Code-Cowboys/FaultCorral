@@ -42,7 +42,15 @@ class EngineFlag {
   final Id? componentId;
   final Id? circuitId;
 
+  /// Stable identity for this flag across evaluations of the same snapshot:
+  /// used to record warning acknowledgments (spec §3.1: finalize with
+  /// acknowledgment, recorded). Stable across runs and VM versions — do not
+  /// substitute Dart hashCode, which is not.
+  String get key =>
+      '$ruleId|${componentId ?? ''}|${circuitId ?? ''}|${_fnv1a(message)}';
+
   Map<String, Object?> toJson() => {
+        'key': key,
         'rule_id': ruleId,
         'rule_version': ruleVersion,
         'severity': severity.wire,
@@ -50,6 +58,16 @@ class EngineFlag {
         'component_id': componentId,
         'circuit_id': circuitId,
       };
+}
+
+/// 32-bit FNV-1a over UTF-16 code units; stable across runs and platforms.
+String _fnv1a(String input) {
+  var hash = 0x811c9dc5;
+  for (final unit in input.codeUnits) {
+    hash ^= unit;
+    hash = (hash * 0x01000193) & 0xFFFFFFFF;
+  }
+  return hash.toRadixString(16).padLeft(8, '0');
 }
 
 /// One step in a component's explainability trace (spec §3.2): why this

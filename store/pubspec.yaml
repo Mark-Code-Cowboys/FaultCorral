@@ -1,0 +1,21 @@
+name: faultcorral_store
+description: >-
+  FaultCorral local persistence: SQLite (WAL-journaled, append-only audit,
+  write-once finalization records) behind typed repositories. Pure Dart;
+  the Flutter app supplies the platform sqlite3 library via
+  sqlite3_flutter_libs.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  faultcorral_core:
+    path: ../core
+  meta: ^1.12.0
+  sqlite3: ^2.4.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0
