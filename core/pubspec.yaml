@@ -1,0 +1,17 @@
+name: faultcorral_core
+description: >-
+  FaultCorral core domain library: models, rules registry, rollup engine,
+  and versioned JSON export/import. Pure Dart — zero UI imports.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  collection: ^1.18.0
+  meta: ^1.12.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0

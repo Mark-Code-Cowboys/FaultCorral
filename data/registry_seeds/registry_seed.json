@@ -1,0 +1,99 @@
+[
+  {
+    "id": "weakest_link_rollup",
+    "name": "Weakest-link rollup",
+    "description": "PLACEHOLDER — owner wording required. Panel SCCR is the minimum effective SCCR across in-scope components; limiting components are ranked (top-N strays).",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {
+      "top_n_strays": 3
+    }
+  },
+  {
+    "id": "scope",
+    "name": "Rollup scope",
+    "description": "PLACEHOLDER — owner wording required. Which categories/flags are in the power-circuit rollup.",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {
+      "require_power_circuit_flag": true,
+      "category_scope": null
+    }
+  },
+  {
+    "id": "assumed_default",
+    "name": "Assumed-default values",
+    "description": "PLACEHOLDER — owner wording required. Values with source type assumed_default come from the shop-configured assumed-ratings table. UI label: \"your configured assumed ratings\".",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {
+      "defaults_table": []
+    }
+  },
+  {
+    "id": "series_combination",
+    "name": "Series-combination application",
+    "description": "PLACEHOLDER — owner wording required. A ComboRating may raise a downstream component's effective SCCR only when the tree shows the specified upstream device on the path, voltage limits hold, and the combo is attested.",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {}
+  },
+  {
+    "id": "voltage_validation",
+    "name": "Voltage validation",
+    "description": "PLACEHOLDER — owner wording required. Component voltage rating vs. panel rated voltage; slash-rating applicability parameters are owner-defined. Mismatch is a blocking flag.",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {
+      "slash_rating_params": null
+    }
+  },
+  {
+    "id": "transformer_handling",
+    "name": "Transformer handling",
+    "description": "PLACEHOLDER — owner wording required. Treatment of power and control transformers. Structure and UI affordances only; math lands after the owner specifies and signs off the rule.",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {}
+  },
+  {
+    "id": "current_limiting_let_through",
+    "name": "Current-limiting / let-through",
+    "description": "PLACEHOLDER — owner wording required. Data structure and display only. Any rating-elevation logic stays disabled until the owner writes the rule and signs it off (spec §3.1 rule 7).",
+    "clause_pointer": null,
+    "status": "disabled",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {}
+  },
+  {
+    "id": "pdb_presence_check",
+    "name": "PDB / terminal block presence check",
+    "description": "PLACEHOLDER — owner wording required. Heuristic QUESTION flag when a circuit distributes power but records no rated distribution component — a question, never an assertion.",
+    "clause_pointer": null,
+    "status": "unverified",
+    "verified_by": null,
+    "verified_date": null,
+    "version": 1,
+    "params": {}
+  }
+]

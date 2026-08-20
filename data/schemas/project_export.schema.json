@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://faultcorral.codecowboys.example/schemas/project_export/0.1.0",
+  "title": "FaultCorral portable project export",
+  "description": "Single-file project export/import format (spec §4). Versioned; the const below must match projectExportSchemaVersion in core (enforced by tool/schema_check.dart).",
+  "type": "object",
+  "required": ["format", "schema_version", "app_version", "exported_at", "registry_versions", "registry", "snapshot"],
+  "properties": {
+    "format": { "const": "faultcorral_project" },
+    "schema_version": { "const": "0.1.0" },
+    "app_version": { "type": "string" },
+    "exported_at": { "type": "string", "format": "date-time" },
+    "registry_versions": {
+      "type": "object",
+      "additionalProperties": { "type": "integer" }
+    },
+    "registry": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ruleRegistryEntry" }
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["project", "circuits", "components", "combo_ratings"],
+      "properties": {
+        "project": { "$ref": "#/$defs/project" },
+        "circuits": { "type": "array", "items": { "$ref": "#/$defs/circuit" } },
+        "components": { "type": "array", "items": { "$ref": "#/$defs/component" } },
+        "combo_ratings": { "type": "array", "items": { "$ref": "#/$defs/comboRating" } }
+      }
+    }
+  },
+  "$defs": {
+    "entityMeta": {
+      "type": "object",
+      "required": ["id", "created_at", "updated_at", "created_by"],
+      "properties": {
+        "id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "created_by": { "type": "string" }
+      }
+    },
+    "attestation": {
+      "type": "object",
+      "required": ["user_id", "timestamp"],
+      "properties": {
+        "user_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "attestedValue": {
+      "type": "object",
+      "required": ["value", "source_type", "citation", "attestation"],
+      "properties": {
+        "value": {},
+        "source_type": {
+          "enum": ["marked", "datasheet", "assumed_default", "series_combination", "other", null]
+        },
+        "citation": { "type": ["string", "null"] },
+        "attestation": {
+          "oneOf": [{ "$ref": "#/$defs/attestation" }, { "type": "null" }]
+        }
+      }
+    },
+    "project": {
+      "allOf": [{ "$ref": "#/$defs/entityMeta" }],
+      "type": "object",
+      "required": ["shop_id", "name", "rated_voltages", "status"],
+      "properties": {
+        "shop_id": { "type": "string" },
+        "name": { "type": "string" },
+        "customer": { "type": ["string", "null"] },
+        "panel_number": { "type": ["string", "null"] },
+        "revision": { "type": ["string", "null"] },
+        "rated_voltages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["volts", "system", "slash_rating_context"],
+            "properties": {
+              "volts": { "type": "number" },
+              "system": { "enum": ["3ph_delta", "3ph_wye", "1ph", "other"] },
+              "slash_rating_context": { "type": "boolean" }
+            }
+          }
+        },
+        "phases": { "type": ["integer", "null"] },
+        "frequency_hz": { "type": ["number", "null"] },
+        "enclosure_ref": { "type": ["string", "null"] },
+        "status": { "enum": ["draft", "in_review", "finalized"] },
+        "finalized_snapshot_ref": { "type": ["string", "null"] }
+      }
+    },
+    "circuit": {
+      "allOf": [{ "$ref": "#/$defs/entityMeta" }],
+      "type": "object",
+      "required": ["project_id", "kind", "label"],
+      "properties": {
+        "project_id": { "type": "string" },
+        "parent_circuit_id": { "type": ["string", "null"] },
+        "kind": { "enum": ["feeder", "branch", "sub"] },
+        "label": { "type": "string" },
+        "upstream_protective_device_component_id": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "component": {
+      "allOf": [{ "$ref": "#/$defs/entityMeta" }],
+      "type": "object",
+      "required": ["circuit_id", "quantity", "tag", "category", "power_circuit", "voltage_rating", "sccr_ka", "interrupting_rating_ka"],
+      "properties": {
+        "circuit_id": { "type": "string" },
+        "library_item_id": { "type": ["string", "null"] },
+        "library_item_version": { "type": ["integer", "null"] },
+        "quantity": { "type": "integer", "minimum": 1 },
+        "tag": { "type": "string" },
+        "category": { "type": "string" },
+        "category_other_label": { "type": ["string", "null"] },
+        "manufacturer": { "type": ["string", "null"] },
+        "part_number": { "type": ["string", "null"] },
+        "power_circuit": { "type": "boolean" },
+        "voltage_rating": { "$ref": "#/$defs/attestedValue" },
+        "sccr_ka": { "$ref": "#/$defs/attestedValue" },
+        "interrupting_rating_ka": { "$ref": "#/$defs/attestedValue" },
+        "current_limiting": { "type": ["boolean", "null"] },
+        "let_through": { "type": ["object", "null"] },
+        "combo_rating_ids": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "comboRating": {
+      "allOf": [{ "$ref": "#/$defs/entityMeta" }],
+      "type": "object",
+      "required": ["shop_id", "upstream", "downstream", "tested_sccr_ka", "voltage_limit_volts", "citation", "attestation"],
+      "properties": {
+        "shop_id": { "type": "string" },
+        "upstream": { "$ref": "#/$defs/deviceSpec" },
+        "downstream": { "$ref": "#/$defs/deviceSpec" },
+        "tested_sccr_ka": { "type": "number" },
+        "voltage_limit_volts": { "type": "number" },
+        "citation": { "type": "string" },
+        "attestation": { "$ref": "#/$defs/attestation" }
+      }
+    },
+    "deviceSpec": {
+      "type": "object",
+      "required": ["manufacturer", "part_or_family"],
+      "properties": {
+        "manufacturer": { "type": "string" },
+        "part_or_family": { "type": "string" },
+        "class_or_size": { "type": ["string", "null"] }
+      }
+    },
+    "ruleRegistryEntry": {
+      "type": "object",
+      "required": ["id", "name", "description", "status", "version", "params"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "clause_pointer": { "type": ["string", "null"] },
+        "status": { "enum": ["unverified", "verified", "disabled"] },
+        "verified_by": { "type": ["string", "null"] },
+        "verified_date": { "type": ["string", "null"], "format": "date-time" },
+        "version": { "type": "integer" },
+        "params": { "type": "object" }
+      }
+    }
+  }
+}

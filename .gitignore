@@ -1,0 +1,27 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+# keep packages unlocked while pre-release; revisit for app release builds
+pubspec.lock
+*.g.dart.bak
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# Coverage / test output
+coverage/
+*.lcov
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local scratch
+*.local.*
+scratch/

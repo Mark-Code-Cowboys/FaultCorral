@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  core:
+    name: Core library + repo checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Core — pub get
+        working-directory: core
+        run: dart pub get
+
+      - name: Core — analyze
+        working-directory: core
+        run: dart analyze --fatal-infos
+
+      - name: Core — format check
+        working-directory: core
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Core — tests
+        working-directory: core
+        run: dart test
+
+      - name: Banned-vocabulary lint (spec §0.1)
+        run: dart tool/banned_vocab_lint.dart
+
+      - name: License headers
+        run: dart tool/license_header_check.dart
+
+      - name: Schema-migration check
+        run: dart tool/schema_check.dart
+
+      - name: Owner-verification checklist freshness
+        run: dart tool/owner_verify_checklist.dart --check
+
+  app:
+    name: Flutter app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: App — pub get
+        working-directory: app
+        run: flutter pub get
+
+      - name: App — analyze
+        working-directory: app
+        run: flutter analyze

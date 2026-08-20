@@ -1,0 +1,8 @@
+{
+  "golden_case": "0001",
+  "title": "PLACEHOLDER — owner's first historical panel",
+  "status": "todo_owner_verify",
+  "notes": "TODO(owner-verify): Replace with a real panel run end-to-end at GATE 1 (spec §7 Phase 1) and its known-correct outcome from the shop's spreadsheet. 'export' holds a full FaultCorral project export; 'expected' holds the outcome to regression-test against.",
+  "export": null,
+  "expected": null
+}
